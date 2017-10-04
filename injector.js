@@ -3,10 +3,17 @@ const babylon = require('babylon')
 const t = require('babel-types')
 
 const src = `
-let fuga = 2
+let hoge = 2
 function hoge() {
     console.log(1)
 }
+class Hoge{
+    constructor() {
+        console.log(1)
+    }
+}
+
+
 `
 
 // const createNode = sourceCode => babylon.parseExpression(sourceCode)
@@ -50,8 +57,8 @@ const injectionToFunction = (path, name, code) => {
     }
 }
 
-const targetId = 'hoge'
-const replaceCode = '{console.log(10)}'
+const targetId = 'Hoge'
+const replaceCode = 'class Hoge {}'
 
 const visitor = {
     VariableDeclarator: (nodePath) => {
@@ -67,9 +74,15 @@ const visitor = {
                 nodePath.get('body').replaceWith(createNode(replaceCode))
             }
         }
-    }
-
-
+    },
+    ClassDeclaration: (nodePath) => {
+        if (t.isIdentifier(nodePath.node.id)) {
+            if (nodePath.node.id.name === targetId) {
+                nodePath.insertBefore(createNode(replaceCode))
+                nodePath.remove()
+            }
+        }
+    },
 }
 
 const plugin = {
