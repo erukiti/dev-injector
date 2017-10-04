@@ -1,62 +1,41 @@
 import {transformFileSync} from 'babel-core'
 import {install} from 'source-map-support'
 import * as babylon from 'babylon'
+import * as path from 'path'
+
+import {Injector} from './injector'
 
 export const injection = (conf) => {
     install({hookRequire: true})
 
-    console.log(Object.keys(require.extensions))
+    const injectors = {}
+    Object.keys(conf).forEach(key => {
+        const injector = new Injector(conf[key])
+        injectors[key] = (filename: string) => injector.transformFileSync(filename)
+    })
 
-    // const olds = {}
-    // const register = (ext, cb) => {
-    //     olds[ext] = require.extensions[ext]
-    //     require.extensions[ext] = (m, filename) => {
-    //         const projectPath = path.resolve('./')
-    //         if (filename.substr(0, projectPath.length) !== projectPath || filename.indexOf('node_modules') !== -1) {
-    //             olds[ext](m, filename)
-    //             return
-    //         }
+    const olds = {}
+    const register = (ext: string) => {
+        olds[ext] = require.extensions[ext]
+        require.extensions[ext] = (m: any, filename) => {
+            let isInjected = false
+            Object.keys(injectors).forEach(key => {
+                if (key.substr(0, 1) === '.') {
+                    const targetPath = path.resolve(path.dirname(m.parent.filename), key)
+                    if (targetPath === m.filename) {
+                        isInjected = true
+                        const code = injectors[key](m.filename)
+                        m._compile(code, filename)
+                    }
+                }
+            })
 
-    //         const code = cb(filename)
-    //         m._compile(code, filename)
-    //     }
-    // }
+            if (!isInjected) {
+                olds[ext](m, filename)
+            }
+        }
+    }
 
-
-    // const stripNode = node => {
-    //     switch (node.type) {
-    //         case 'File': {
-    //             return stripNode(node.program)
-    //         }
-    //         case 'Program': {
-    //             return stripNode(node.body[0])
-    //         }
-    //         default: {
-    //             return node
-    //         }
-    //     }
-    // }
-
-    // const createNode = (sourceCode) => {
-    //     const ast = babylon.parse(sourceCode)
-
-    //     return stripNode(ast)
-    // }
-
-
-
-    // const plugin = {
-    //     name: 'injector',
-    //     visitor,
-    // }
-
-    // const convertFromFile = filename => {
-    //     const {code} = transformFileSync(filename, {plugins: [plugin]})
-    //     return code
-    // }
-
-    // register('.js', filename => {
-    //     return convertFromFile(filename)
-    // }
+    register('.js')
 }
 

@@ -18,22 +18,19 @@ const stripNode = node => {
 };
 const createNode = (sourceCode) => {
     const ast = babylon.parse(sourceCode);
-    return stripNode(ast);
+    return stripNode(ast.program);
 };
 class Injector {
     constructor(conf) {
         const replacers = Object.assign({}, conf.replace);
         // FIXME: key の正規化
         const visitor = {
-            Program: (nodePath) => {
-                // console.log(nodePath.get('body'))
-            },
             VariableDeclarator: (nodePath) => {
                 const { kind } = nodePath.parent;
                 if (t.isIdentifier(nodePath.node.id)) {
                     const replaceCode = replacers[`${kind} ${nodePath.node.id.name} =`];
                     if (replaceCode) {
-                        nodePath.get('init').replaceWith(createNode(replaceCode));
+                        nodePath.get('init').replaceWith(babylon.parseExpression(replaceCode));
                     }
                 }
             },
@@ -58,10 +55,15 @@ class Injector {
             name: 'injector',
             visitor,
         };
+        this.babelConf = {
+            plugins: [this.plugin]
+        };
     }
     transform(src) {
-        const { code } = babel_core_1.transform(src, { plugins: [this.plugin] });
-        return code;
+        return babel_core_1.transform(src, this.babelConf).code;
+    }
+    transformFileSync(filename) {
+        return babel_core_1.transformFileSync(filename, this.babelConf).code;
     }
     getPlugin() {
         return this.plugin;

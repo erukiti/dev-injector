@@ -1,14 +1,18 @@
 {
-  "name": "injector",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "dev-injector",
+  "version": "0.1.0",
+  "description": "injection source code for required source in Node.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tsc && ava",
+    "build": "tsc"
+  },
+  "repository": {
+    "url": "git@github.com:erukiti/dev-injector.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "SASAKI Shunsuke <erukiti+npm@gmail.com",
+  "license": "Apache-2.0",
   "dependencies": {
     "babel-core": "^7.0.0-beta.2",
     "babel-traverse": "^7.0.0-beta.2",
