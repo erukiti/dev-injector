@@ -3,6 +3,7 @@ const babylon = require('babylon')
 const t = require('babel-types')
 
 const src = `
+const hoge = 1
 const fuga = 1
 `
 
@@ -47,9 +48,16 @@ const injectionToFunction = (path, name, code) => {
     }
 }
 
+const targetId = 'hoge'
+const replaceCode = '1 + 1'
+
 const visitor = {
     VariableDeclarator: (nodePath) => {
-        nodePath.get('init').replaceWith(createNode('1 + 1'))
+        if (t.isIdentifier(nodePath.node.id)) {
+            if (nodePath.node.id.name === targetId) {
+                nodePath.get('init').replaceWith(createNode(replaceCode))
+            }
+        }
     }
 }
 
