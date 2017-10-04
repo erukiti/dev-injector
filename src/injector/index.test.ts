@@ -1,13 +1,13 @@
-const test = require('ava')
+import test from 'ava'
 
-const Injector = require('./')
-const {transform} = require('babel-core')
+import {transform} from 'babel-core'
+
+import {Injector} from './'
 
 const f = src => {
     const {code} = transform(src)
     return code
 }
-
 
 test('Variable.init replace', t => {
     const conf = {
@@ -41,6 +41,7 @@ test('Class replace', t => {
             'class Hoge': 'class Hoge{ constructor() {console.log(1)} hoge() {return "hoge"}}'
         }
     }
+
     const src = 'class Hoge{ constructor() {}}'
     const injector = new Injector(conf)
     const res = injector.transform(src)

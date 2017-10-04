@@ -1,7 +1,7 @@
-const {transform} = require('babel-core')
-const babylon = require('babylon')
-const t = require('babel-types')
-const assert = require('power-assert')
+import {transform} from 'babel-core'
+import * as babylon from 'babylon'
+import * as t from 'babel-types'
+import assert from 'power-assert'
 
 const stripNode = node => {
     switch (node.type) {
@@ -23,47 +23,9 @@ const createNode = (sourceCode) => {
     return stripNode(ast)
 }
 
-const injectionToFunction = (path, name, code) => {
-    const n = path.node
-    const info = `enter ${name}:${n.loc.start.line}:${n.loc.start.column}`
-
-    const node = createNode(`console.log('${info}')`)
-
-    const body = path.get('body')
-    if (t.isBlock(body)) {
-        body.unshiftContainer('body', node)
-    } else if (t.isStatement(body)) {
-        // body.replaceWith(t.blockStatement([node, body]))
-        body.replaceWithSourceString()
-    } else if (t.isExpression(body)) {
-        body.replaceWith(t.blockStatement([node, t.returnStatement(body.node)]))
-    } else {
-        throw new Error('unkown pattern')
-    }
-}
-
-// const conf = {
-//     replace: {
-//         'let hoge': 'const hoge = 2',
-//         'function fuga': 'function fuga(arg) {console.log(arg)}',
-//         'class Hoge': `
-//         class Hoge {
-//             constructor() {
-//                 console.log(1000)
-//             }
-
-//             hoge() {
-//                 return 'hoge'
-//             }
-//         }
-//         `
-//     }
-// }
-
-class Injector {
+export class Injector {
+    plugin
     constructor(conf) {
-        const {targetId, replaceCode} = {}
-
         const replacers = Object.assign({}, conf.replace)
         // FIXME: key の正規化
 
@@ -115,4 +77,4 @@ class Injector {
     }
 }
 
-module.exports = Injector
+
