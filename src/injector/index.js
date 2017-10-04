@@ -62,7 +62,7 @@ const injectionToFunction = (path, name, code) => {
 
 class Injector {
     constructor(conf) {
-        const {targetId, replaceCode} = conf
+        const {targetId, replaceCode} = {}
 
         const replacers = Object.assign({}, conf.replace)
         // FIXME: key の正規化
@@ -83,17 +83,18 @@ class Injector {
             },
             FunctionDeclaration: (nodePath) => {
                 if (t.isIdentifier(nodePath.node.id)) {
-                    if (nodePath.node.id.name === targetId) {
-                        nodePath.get('body').replaceWith(createNode(replaceCode))
+                    const replaceCode = replacers[`function ${nodePath.node.id.name}`]
+                    if (replaceCode) {
+                        nodePath.insertBefore(createNode(replaceCode))
+                        nodePath.remove()
                     }
                 }
             },
             ClassDeclaration: (nodePath) => {
-                if (t.isIdentifier(nodePath.node.id)) {
-                    if (nodePath.node.id.name === targetId) {
-                        nodePath.insertBefore(createNode(replaceCode))
-                        nodePath.remove()
-                    }
+                const replaceCode = replacers[`class ${nodePath.node.id.name}`]
+                if (replaceCode) {
+                    nodePath.insertBefore(createNode(replaceCode))
+                    nodePath.remove()
                 }
             },
         }
