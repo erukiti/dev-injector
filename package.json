@@ -1,6 +1,6 @@
 {
   "name": "dev-injector",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "injection source code for required source in Node.js",
   "main": "dist/index.js",
   "scripts": {

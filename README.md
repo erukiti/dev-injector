@@ -5,7 +5,7 @@ Injection source code into required source in Node.js.
 ## install
 
 ```sh
-$ npm i debug-injector -D
+$ npm i dev-injector -D
 ```
 
 ## How to use
