@@ -1,6 +1,13 @@
 const test = require('ava')
 
 const Injector = require('./')
+const {transform} = require('babel-core')
+
+const f = src => {
+    const {code} = transform(src)
+    return code
+}
+
 
 test('Variable.init replace', t => {
     const conf = {
@@ -12,7 +19,7 @@ test('Variable.init replace', t => {
     const src = 'const hoge = 10'
     const injector = new Injector(conf)
     const res = injector.transform(src)
-    t.true(res === 'const hoge = 1000;')
+    t.true(f(res) === f('const hoge = 1000'))
 })
 
 test('Function replace', t => {
@@ -25,9 +32,7 @@ test('Function replace', t => {
     const src = 'function fuga() {console.log(1)}'
     const injector = new Injector(conf)
     const res = injector.transform(src)
-    t.true(res === `function piyo() {
-  console.log(1000);
-}`)
+    t.true(f(res) === f('function piyo() {console.log(1000)}'))
 })
 
 test('Class replace', t => {
@@ -39,14 +44,5 @@ test('Class replace', t => {
     const src = 'class Hoge{ constructor() {}}'
     const injector = new Injector(conf)
     const res = injector.transform(src)
-    t.true(res === `class Hoge {
-  constructor() {
-    console.log(1);
-  }
-
-  hoge() {
-    return "hoge";
-  }
-
-}`)
+    t.true(f(res) === f('class Hoge {constructor() {console.log(1)} hoge() {return "hoge"}}'))
 })
