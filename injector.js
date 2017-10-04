@@ -4,9 +4,11 @@ const t = require('babel-types')
 
 const src = `
 let hoge = 2
-function hoge() {
+
+function fuga() {
     console.log(1)
 }
+
 class Hoge{
     constructor() {
         console.log(1)
@@ -59,6 +61,22 @@ const injectionToFunction = (path, name, code) => {
 
 const targetId = 'Hoge'
 const replaceCode = 'class Hoge {}'
+
+const conf = {
+    'let hoge': 'const hoge = 2',
+    'function fuga': 'function fuga(arg) {console.log(arg)}',
+    'class Hoge': `
+    class Hoge {
+        constructor() {
+            console.log(1000)
+        }
+
+        hoge() {
+            return 'hoge'
+        }
+    }
+    `
+}
 
 const visitor = {
     VariableDeclarator: (nodePath) => {
