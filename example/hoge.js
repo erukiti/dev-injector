@@ -9,6 +9,11 @@ function fuga() {
 fuga()
 
 class Piyo {
-}
+    constructor() {
+        console.log('piyo')
+    }
 
-const piyo = new Piyo()
+    get() {
+        return null
+    }
+}

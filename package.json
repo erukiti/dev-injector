@@ -1,6 +1,6 @@
 {
   "name": "dev-injector",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "injection source code for required source in Node.js",
   "main": "dist/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "url": "git@github.com:erukiti/dev-injector.git"
   },
   "keywords": [],
-  "author": "SASAKI Shunsuke <erukiti+npm@gmail.com",
+  "author": "SASAKI Shunsuke <erukiti+npm@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
     "babel-core": "^7.0.0-beta.2",

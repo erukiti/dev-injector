@@ -28,8 +28,18 @@ export class Injector {
     constructor(conf) {
         const replacers = Object.assign({}, conf.replace)
         // FIXME: key の正規化
+        const inserters = Object.assign({}, conf.insert)
 
         const visitor = {
+            Program: {
+                exit: (nodePath) => {
+                    if (inserters.last) {
+                        const bodies = nodePath.get('body')
+                        const replaceCode = inserters.last
+                        bodies[bodies.length - 1].insertAfter(createNode(replaceCode))
+                    }
+                }
+            },
             VariableDeclarator: (nodePath) => {
                 const {kind} = nodePath.parent
 

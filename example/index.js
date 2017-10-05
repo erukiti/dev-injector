@@ -5,12 +5,27 @@ const conf = {
         replace: {
             'const hoge =': '"const hoge replaced"',
             'function fuga': 'function fuga() {console.log("function fuga replaced")}',
-            'class Piyo': 'class Piyo { constructor() {console.log("class Piyo replaced")}}'
+            'class Piyo': `
+            class Piyo {
+                constructor() {
+                    console.log('class Piyo replaced')
+                }
+
+                get() {
+                    return 'piyo'
+                }
+            }
+            `
+        },
+        insert: {
+            last: 'module.exports.Piyo = Piyo'
         }
     }
 }
 injection(conf)
 
-require('./hoge')
+const {Piyo} = require('./hoge')
 
+const piyo = new Piyo()
+console.log('export succeeded:', piyo.get() === 'piyo')
 
